@@ -13,6 +13,19 @@ poll_interval_ms = 8
 # Retry delay when game not found (ms)
 scan_interval_ms = 2000
 
+# ── Manual Address Overrides ─────────────────────────────
+# If pattern scanning fails, you can provide addresses manually.
+# Find these with Cheat Engine (search for your HP, then trace
+# the pointer chain back to the base address).
+# Format: hex addresses, e.g. 0x1448A7B30
+# Uncomment and fill in the ones you need.
+#
+# [game.manual_addresses]
+# WorldChrMan = "0x0"
+# GameManImp = "0x0"
+# GameDataMan = "0x0"
+# FieldArea = "0x0"
+
 [overlay]
 # Overlay opacity (0.0 = invisible, 1.0 = fully opaque)
 opacity = 0.85

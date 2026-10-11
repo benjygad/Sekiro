@@ -66,6 +66,7 @@ class GameStateManager:
         self._prev_in_combat: bool = False
         self._prev_enemy_attacking: bool = False
         self._was_attached: bool = False
+        self._scan_reported: bool = False
 
     # ── Event System ──────────────────────────────────────
 
@@ -151,6 +152,11 @@ class GameStateManager:
                         scan_timer = 2.0
                     else:
                         self._update_state()
+
+                        # On first successful connection, report scan results
+                        if not self._scan_reported:
+                            self._report_scan_results()
+                            self._scan_reported = True
 
             except Exception as e:
                 logger.error(f"Poll loop error: {e}", exc_info=True)
@@ -336,6 +342,61 @@ class GameStateManager:
 
         # General update
         self._emit("state_update", self.world_state)
+
+    def _report_scan_results(self):
+        """Log a summary of pattern scan results after initial connection."""
+        report = self.scanner.get_scan_report()
+        cached = report.get("cached", {})
+        not_found = report.get("not_found", [])
+
+        logger.info(f"Pattern scan complete: {len(cached)} found, {len(not_found)} not found")
+
+        if cached:
+            for name, info in cached.items():
+                logger.info(f"  ✓ {name}: {info['address']}")
+
+        if not_found:
+            # Separate critical from non-critical patterns
+            critical = [n for n in not_found if n in ("WorldChrMan", "WorldChrMan_alt")]
+            important = [n for n in not_found if n in ("GameDataMan", "GameManImp")]
+            optional = [n for n in not_found if n not in critical and n not in important]
+
+            if critical:
+                logger.error(
+                    f"  ✗ CRITICAL patterns not found: {', '.join(critical)}"
+                )
+                logger.error(
+                    "    → The trainer cannot read character data."
+                )
+                logger.error(
+                    "    → This usually means:"
+                )
+                logger.error(
+                    "      1. Game version doesn't match (need Sekiro v1.06 Steam)"
+                )
+                logger.error(
+                    "      2. Anti-cheat is blocking memory access (try disabling EAC)"
+                )
+                logger.error(
+                    "      3. Need to run as Administrator"
+                )
+                logger.error(
+                    "    → You can set manual addresses in config.toml "
+                    "[game.manual_addresses]"
+                )
+                logger.error(
+                    "    → Or use Cheat Engine to find the correct patterns"
+                )
+
+            if important:
+                logger.warning(
+                    f"  ✗ Important patterns not found: {', '.join(important)}"
+                )
+
+            if optional:
+                logger.debug(
+                    f"  ○ Optional patterns not found: {', '.join(optional)}"
+                )
 
     # ── Public API ────────────────────────────────────────
 

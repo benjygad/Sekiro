@@ -28,8 +28,18 @@ logger = logging.getLogger(__name__)
 
 SEKIRO_PATTERNS: Dict[str, dict] = {
     # WorldChrMan - Character instance manager
+    # Multiple pattern variants for different game versions
     "WorldChrMan": {
-        "pattern": "48 8B 05 ?? ?? ?? ?? 48 8B 48 68 48 85 C9 74 0D",
+        "patterns": [
+            # Variant 1: Common pattern for Sekiro v1.06
+            "48 8B 05 ?? ?? ?? ?? 48 8B 48 68 48 85 C9 74 0D",
+            # Variant 2: Alternate from community tables
+            "48 8B 0D ?? ?? ?? ?? 48 85 C9 0F 84 ?? ?? ?? ?? 48 39 99",
+            # Variant 3: Another common variant
+            "48 8B 05 ?? ?? ?? ?? 48 85 C0 74 ?? 48 8B 88 ?? ?? ?? ?? 48 85 C9",
+            # Variant 4: Pattern near ChrIns initialization
+            "48 83 EC 28 48 8B 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 85 C0 74",
+        ],
         "instruction_size": 7,
         "offset": 3,
         "type": "rip_relative",
@@ -38,7 +48,11 @@ SEKIRO_PATTERNS: Dict[str, dict] = {
 
     # GameManImp - Game manager (pause, loading, etc.)
     "GameManImp": {
-        "pattern": "48 8B 05 ?? ?? ?? ?? C6 80 ?? ?? ?? ?? ?? 48 83 C4 20",
+        "patterns": [
+            "48 8B 05 ?? ?? ?? ?? C6 80 ?? ?? ?? ?? ?? 48 83 C4 20",
+            "48 8B 05 ?? ?? ?? ?? 48 85 C0 74 ?? 80 B8 ?? ?? ?? ?? ?? 74",
+            "48 8B 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 74 ?? 48 8B 05",
+        ],
         "instruction_size": 7,
         "offset": 3,
         "type": "rip_relative",
@@ -47,7 +61,10 @@ SEKIRO_PATTERNS: Dict[str, dict] = {
 
     # CSMenuManImp - Menu state
     "CSMenuManImp": {
-        "pattern": "48 8B 05 ?? ?? ?? ?? 48 89 44 24 ?? 48 8B F1 48 85 C0 74 ?? 48 8B 88",
+        "patterns": [
+            "48 8B 05 ?? ?? ?? ?? 48 89 44 24 ?? 48 8B F1 48 85 C0 74 ?? 48 8B 88",
+            "48 8B 05 ?? ?? ?? ?? 48 85 C0 74 ?? 48 8B 88 ?? ?? ?? ?? E8",
+        ],
         "instruction_size": 7,
         "offset": 3,
         "type": "rip_relative",
@@ -56,7 +73,11 @@ SEKIRO_PATTERNS: Dict[str, dict] = {
 
     # WorldChrMan (alternate pattern for newer patches)
     "WorldChrMan_alt": {
-        "pattern": "48 8B 0D ?? ?? ?? ?? 48 85 C9 0F 84 ?? ?? ?? ?? 48 39 99",
+        "patterns": [
+            "48 8B 0D ?? ?? ?? ?? 48 85 C9 0F 84 ?? ?? ?? ?? 48 39 99",
+            "48 8B 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B D8 48 85 C0",
+            "48 83 EC 28 48 8B 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 85 C0",
+        ],
         "instruction_size": 7,
         "offset": 3,
         "type": "rip_relative",
@@ -65,7 +86,11 @@ SEKIRO_PATTERNS: Dict[str, dict] = {
 
     # GameDataMan - Player save data
     "GameDataMan": {
-        "pattern": "48 8B 05 ?? ?? ?? ?? 48 85 C0 74 05 48 8B 40 58 C3",
+        "patterns": [
+            "48 8B 05 ?? ?? ?? ?? 48 85 C0 74 05 48 8B 40 58 C3",
+            "48 8B 05 ?? ?? ?? ?? 48 85 C0 74 ?? 48 8B 80 ?? ?? ?? ?? C3",
+            "48 8B 0D ?? ?? ?? ?? 48 85 C9 74 ?? 48 8B 89 ?? ?? ?? ?? E8",
+        ],
         "instruction_size": 7,
         "offset": 3,
         "type": "rip_relative",
@@ -74,7 +99,10 @@ SEKIRO_PATTERNS: Dict[str, dict] = {
 
     # FieldArea - World/area management
     "FieldArea": {
-        "pattern": "48 8B 05 ?? ?? ?? ?? 48 8B 48 08 48 85 C9 74 1F 48 39 59 68",
+        "patterns": [
+            "48 8B 05 ?? ?? ?? ?? 48 8B 48 08 48 85 C9 74 1F 48 39 59 68",
+            "48 8B 05 ?? ?? ?? ?? 48 85 C0 74 ?? 48 8B 40 08 C3",
+        ],
         "instruction_size": 7,
         "offset": 3,
         "type": "rip_relative",
@@ -83,7 +111,10 @@ SEKIRO_PATTERNS: Dict[str, dict] = {
 
     # ChrAsm - Character equipment assembly
     "ChrAsm": {
-        "pattern": "48 8B 05 ?? ?? ?? ?? 48 85 C0 74 ?? 48 8B 88 ?? ?? ?? ?? 48 85 C9 74 ?? E8",
+        "patterns": [
+            "48 8B 05 ?? ?? ?? ?? 48 85 C0 74 ?? 48 8B 88 ?? ?? ?? ?? 48 85 C9 74 ?? E8",
+            "48 8B 05 ?? ?? ?? ?? 48 85 C0 74 ?? 48 8B 40 08 C3 48 8B 05",
+        ],
         "instruction_size": 7,
         "offset": 3,
         "type": "rip_relative",
@@ -92,7 +123,10 @@ SEKIRO_PATTERNS: Dict[str, dict] = {
 
     # DamageManagement
     "DamageMan": {
-        "pattern": "48 8B 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B D8 48 85 C0 75 ?? 48 8D 0D",
+        "patterns": [
+            "48 8B 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B D8 48 85 C0 75 ?? 48 8D 0D",
+            "48 8B 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 85 C0 74 ?? 48 8B C8",
+        ],
         "instruction_size": 7,
         "offset": 3,
         "type": "rip_relative",
@@ -101,7 +135,10 @@ SEKIRO_PATTERNS: Dict[str, dict] = {
 
     # AnimSpeed multiplier hook point
     "AnimSpeed": {
-        "pattern": "F3 0F 10 84 C8 ?? ?? ?? ?? F3 0F 59 C7",
+        "patterns": [
+            "F3 0F 10 84 C8 ?? ?? ?? ?? F3 0F 59 C7",
+            "F3 0F 10 ?? ?? ?? ?? ?? F3 0F 59 ?? F3 0F 5C",
+        ],
         "instruction_size": 8,
         "offset": 4,
         "type": "rip_relative",
@@ -110,11 +147,26 @@ SEKIRO_PATTERNS: Dict[str, dict] = {
 
     # Input manager
     "PadMan": {
-        "pattern": "48 8B 05 ?? ?? ?? ?? 48 8B 48 08 48 85 C9 74 ?? 83 B9",
+        "patterns": [
+            "48 8B 05 ?? ?? ?? ?? 48 8B 48 08 48 85 C9 74 ?? 83 B9",
+            "48 8B 05 ?? ?? ?? ?? 48 85 C0 74 ?? 48 8B 48 08 48 85 C9",
+        ],
         "instruction_size": 7,
         "offset": 3,
         "type": "rip_relative",
         "description": "Input/pad manager",
+    },
+
+    # ChrIns lookup helper - for finding player character
+    "ChrInsLookup": {
+        "patterns": [
+            "48 8B 8F ?? ?? ?? ?? 48 85 C9 74 ?? E8 ?? ?? ?? ?? 84 C0",
+            "48 8B 89 ?? ?? ?? ?? 48 85 C9 74 ?? E8 ?? ?? ?? ?? 48 85 C0",
+        ],
+        "instruction_size": 7,
+        "offset": 3,
+        "type": "rip_relative",
+        "description": "Character instance lookup",
     },
 }
 
@@ -217,7 +269,8 @@ class PatternScanner:
         """
         Find a named pattern and return its resolved address.
 
-        Uses caching to avoid repeated scans. Handles RIP-relative
+        Uses caching to avoid repeated scans. Tries multiple pattern
+        variants if the first one fails. Handles RIP-relative
         addressing resolution automatically.
 
         Args:
@@ -235,31 +288,53 @@ class PatternScanner:
             logger.warning(f"Unknown pattern: {name}")
             return None
 
-        logger.info(f"Scanning for pattern: {name} - {pattern_info['description']}")
+        # Support both single "pattern" and multiple "patterns" keys
+        pattern_list = pattern_info.get("patterns", [])
+        if not pattern_list and "pattern" in pattern_info:
+            pattern_list = [pattern_info["pattern"]]
 
-        # Perform the raw scan
-        raw_address = self.reader.scan_pattern(pattern_info["pattern"])
-        if raw_address is None:
-            logger.warning(f"Pattern not found: {name}")
+        if not pattern_list:
+            logger.warning(f"No patterns defined for: {name}")
             return None
 
-        # Resolve the address based on type
-        resolved = self._resolve_address(
-            raw_address,
-            pattern_info["instruction_size"],
-            pattern_info["offset"],
-            pattern_info["type"],
+        logger.info(
+            f"Scanning for pattern: {name} - {pattern_info['description']} "
+            f"({len(pattern_list)} variant(s))"
         )
 
-        if resolved:
-            self._address_cache[name] = resolved
-            self._scan_timestamps[name] = time.time()
-            logger.info(
-                f"Found {name} at 0x{resolved:X} "
-                f"(raw: 0x{raw_address:X})"
-            )
+        # Try each pattern variant
+        for i, pattern_str in enumerate(pattern_list):
+            raw_address = self.reader.scan_pattern(pattern_str)
+            if raw_address is not None:
+                logger.info(
+                    f"  Variant {i+1}/{len(pattern_list)} matched at 0x{raw_address:X}"
+                )
 
-        return resolved
+                # Resolve the address based on type
+                resolved = self._resolve_address(
+                    raw_address,
+                    pattern_info["instruction_size"],
+                    pattern_info["offset"],
+                    pattern_info["type"],
+                )
+
+                if resolved:
+                    self._address_cache[name] = resolved
+                    self._scan_timestamps[name] = time.time()
+                    logger.info(
+                        f"Found {name} at 0x{resolved:X} "
+                        f"(raw: 0x{raw_address:X}, variant {i+1})"
+                    )
+                    return resolved
+                else:
+                    logger.debug(
+                        f"  Variant {i+1} matched but address resolution failed"
+                    )
+            else:
+                logger.debug(f"  Variant {i+1}/{len(pattern_list)}: no match")
+
+        logger.warning(f"Pattern not found (all {len(pattern_list)} variants failed): {name}")
+        return None
 
     def _resolve_address(
         self,
@@ -374,10 +449,48 @@ class PatternScanner:
             pattern: AOB pattern string with ?? wildcards
             **kwargs: Additional pattern info (instruction_size, offset, type)
         """
+        existing = self._patterns.get(name, {})
+        patterns = existing.get("patterns", [])
+        patterns.append(pattern)
+
         self._patterns[name] = {
-            "pattern": pattern,
-            "instruction_size": kwargs.get("instruction_size", 7),
-            "offset": kwargs.get("offset", 3),
-            "type": kwargs.get("type", "rip_relative"),
-            "description": kwargs.get("description", f"Custom: {name}"),
+            "patterns": patterns,
+            "instruction_size": kwargs.get("instruction_size", existing.get("instruction_size", 7)),
+            "offset": kwargs.get("offset", existing.get("offset", 3)),
+            "type": kwargs.get("type", existing.get("type", "rip_relative")),
+            "description": kwargs.get("description", existing.get("description", f"Custom: {name}")),
         }
+
+    def set_manual_address(self, name: str, address: int):
+        """
+        Manually set an address, bypassing pattern scanning.
+
+        Useful when patterns don't match and you know the correct
+        address from Cheat Engine or other tools.
+
+        Args:
+            name: Pattern name (e.g., "WorldChrMan")
+            address: Known address value
+        """
+        self._address_cache[name] = address
+        self._scan_timestamps[name] = time.time()
+        logger.info(f"Manual address set: {name} = 0x{address:X}")
+
+    def get_scan_report(self) -> dict:
+        """Get a report of all pattern scan results."""
+        report = {
+            "scanned": {},
+            "not_found": [],
+            "cached": {},
+        }
+
+        for name in self._patterns:
+            if name in self._address_cache:
+                report["cached"][name] = {
+                    "address": hex(self._address_cache[name]),
+                    "timestamp": self._scan_timestamps.get(name, 0),
+                }
+            else:
+                report["not_found"].append(name)
+
+        return report

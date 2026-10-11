@@ -322,6 +322,19 @@ class SekiroTrainer:
                 process_name=self.config["game"]["process_name"],
                 poll_interval_ms=self.config["game"]["poll_interval_ms"],
             )
+
+            # Apply manual address overrides from config
+            manual_addrs = self.config.get("game", {}).get("manual_addresses", {})
+            if manual_addrs:
+                for name, addr_str in manual_addrs.items():
+                    try:
+                        addr = int(addr_str, 16)
+                        if addr > 0:
+                            self.game_state.scanner.set_manual_address(name, addr)
+                            logger.info(f"Manual override: {name} = 0x{addr:X}")
+                    except (ValueError, TypeError):
+                        logger.warning(f"Invalid manual address for {name}: {addr_str}")
+
             self._demo = None
 
     def _init_assistants(self):

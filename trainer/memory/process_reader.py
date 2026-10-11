@@ -299,6 +299,27 @@ class ProcessReader:
         """Write a 32-bit float."""
         return self.write_bytes(address, struct.pack("<f", value))
 
+    def _parse_aob_pattern(self, pattern: str) -> bytes:
+        """
+        Parse an AOB pattern string into bytes.
+
+        Converts "48 8B 05 ?? ?? ??" to b'\\x48\\x8B\\x05???'.
+        Wildcards (??) become single '?' bytes for pymem.
+
+        Args:
+            pattern: Space-separated hex bytes with ?? wildcards
+
+        Returns:
+            Pattern as bytes suitable for pymem scanning
+        """
+        result = []
+        for byte_str in pattern.split():
+            if byte_str in ("??", "?"):
+                result.append(ord("?"))
+            else:
+                result.append(int(byte_str, 16))
+        return bytes(result)
+
     def scan_pattern(self, pattern: str, module_name: str = None) -> Optional[int]:
         """
         Scan for a byte pattern in memory.
@@ -314,20 +335,21 @@ class ProcessReader:
             return None
 
         try:
-            # Convert pattern string to pymem format
-            aob_pattern = pattern.replace(" ", " ")
+            # Parse pattern string to proper bytes
+            aob_pattern = self._parse_aob_pattern(pattern)
+
             if module_name:
                 module = pymem.process.module_from_name(
                     self._pm.process_handle, module_name
                 )
                 result = pymem.pattern.pattern_scan_module(
-                    aob_pattern.encode(), module, return_multiple=False
+                    aob_pattern, module, return_multiple=False
                 )
             else:
                 result = pymem.pattern.pattern_scan_all(
-                    self._pm.process_handle, aob_pattern.encode()
+                    self._pm.process_handle, aob_pattern
                 )
             return result
         except Exception as e:
-            logger.error(f"Pattern scan failed: {e}")
+            logger.debug(f"Pattern scan failed for '{pattern}': {e}")
             return None

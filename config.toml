@@ -1,0 +1,82 @@
+# ============================================================
+# Sekiro Overlay Trainer Configuration
+# ============================================================
+# Edit these settings to customize the trainer behavior.
+# Hotkeys can be changed at runtime from the overlay settings.
+# ============================================================
+
+[game]
+# Process name to attach to
+process_name = "sekiro.exe"
+# Maximum time (ms) between memory reads
+poll_interval_ms = 8
+# Retry delay when game not found (ms)
+scan_interval_ms = 2000
+
+[overlay]
+# Overlay opacity (0.0 = invisible, 1.0 = fully opaque)
+opacity = 0.85
+# Scale factor for all overlay elements
+scale = 1.0
+# Show overlay on startup
+show_on_start = true
+# Click-through mode (true = clicks pass to game)
+click_through = true
+# Position: "top-left", "top-right", "bottom-left", "bottom-right", "center"
+position = "top-right"
+# Padding from screen edges (pixels)
+padding = 20
+
+[parry_assistant]
+# Enable the perfect parry timing assistant
+enabled = true
+# Parry window in milliseconds (early = green, perfect = gold, late = red)
+perfect_window_ms = 50
+early_window_ms = 150
+late_window_ms = 100
+# Show countdown ring before attack lands
+show_countdown = true
+# Show result flash (PERFECT/EARLY/LATE/MISS)
+show_result_flash = true
+# Sound on perfect parry
+sound_on_perfect = true
+# Show attack pattern name
+show_attack_name = true
+
+[hud]
+# Enhanced HUD elements
+show_player_hp = true
+show_player_posture = true
+show_enemy_hp = true
+show_enemy_posture = true
+show_enemy_name = true
+show_attack_pattern = true
+show_coordinates = false
+show_animation_id = false
+show_combat_stats = true
+
+[training]
+# Training mode features
+auto_death_counter = true
+track_parry_success_rate = true
+track_best_streak = true
+show_session_stats = true
+# Save training history
+save_history = true
+history_file = "training_history.json"
+
+[hotkeys]
+# Toggle overlay visibility
+toggle_overlay = "F1"
+# Toggle parry assistant
+toggle_parry = "F2"
+# Toggle enhanced HUD
+toggle_hud = "F3"
+# Toggle training stats
+toggle_stats = "F4"
+# Reset session stats
+reset_stats = "F5"
+# Toggle settings panel
+toggle_settings = "F6"
+# Quit trainer
+quit = "F12"
